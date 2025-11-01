@@ -8,6 +8,40 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $country = $_POST['country'];
     $agreement = isset($_POST['agreement']) ? 1 : 0;
 
+    // $referal_code = $_POST['referal_code'];
+     function generateInviteCode($length = 8) {
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $code = '';
+        for ($i = 0; $i < $length; $i++) {
+            $code .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+        return $code;
+    }
+
+    
+    $referal_code = generateInviteCode();
+
+    // $stmt = $conn->prepare("SELECT id FROM dash WHERE referal_code = ?");
+    // $stmt->bind_param("s", $referal_code);
+    // $stmt->execute();
+    // $stmt->store_result();
+
+    // if ($stmt->num_rows > 0) {
+    //     $message = "Invite code already exists. Please try again.";
+    // } else {
+    //     $stmt->close();
+
+        // $stmt = $conn->prepare("INSERT INTO dash (referal_code) VALUES (?)");
+        // $stmt->bind_param("s", $referal_code);
+
+        // if ($stmt->execute()) {
+        //     $message = "Invite code generated and saved: <strong>" . htmlspecialchars($referal_code) . "</strong>";
+        // } else {
+        //     $message = "Error: " . $stmt->error;
+        // }
+        // $stmt->close();
+   
+
     // Handle file upload
     $user_image = '';
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -27,9 +61,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $hashedPass = password_hash($pass, PASSWORD_DEFAULT);
 
     // Use prepared statement to prevent SQL injection
-    $sql = "INSERT INTO dash (username, email, country, password, agreement, profile_image) VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO dash (username, email, country, password, referal_code, agreement, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssss", $user, $email, $country, $hashedPass, $agreement, $user_image);
+    $stmt->bind_param("sssssss", $user, $email, $country, $hashedPass, $referal_code, $agreement, $user_image);
 
     if ($stmt->execute()) {
         echo "<script>alert('Registration successful!');</script>";
@@ -37,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } else {
         echo "<script>alert('Error: " . $conn->error . "');</script>";
     }
-}
+  }
 ?>
 
 <!DOCTYPE html>
@@ -96,6 +130,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                       <option>Argentina</option>
                       <option>Nigeria</option>
                     </select>
+                  </div>
+                  <div class="form-group">
+                    <input type="text" class="form-control form-control-lg" id="referal_code" name="referal_code" placeholder="referal_code">
                   </div>
                   <div class="form-group">
                     <input type="password" class="form-control form-control-lg" id="Password1" name="password" placeholder="Password" required>

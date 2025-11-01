@@ -1,12 +1,18 @@
 <?php
 session_start();
 include "pages/samples/connect.php";
+if (!isset($_SESSION['username']) || $_SESSION['username'] == null) {
+    header("Location: pages/samples/login.php");
+    exit();
+  
+}
 
 // Fetch user info from session and database
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
 $user_email = '';
 $user_display = '';
 $user_image = 'image/IMG-20240122-WA0021.jpg'; // default image
+$referral_code = ''; // ensure variable exists
 
 if ($username) {
     // Try to get user by username or email (for Facebook login, username may be email)
@@ -20,6 +26,8 @@ if ($username) {
         if (!empty($row['profile_image'])) {
             $user_image = htmlspecialchars($row['profile_image']);
         }
+        // Safely set referral code if available
+        $referral_code = !empty($row['referal_code']) ? htmlspecialchars($row['referal_code']) : '';
     }
 }
 ?>
@@ -85,9 +93,17 @@ if ($username) {
           <ul class="navbar-nav">
             <li class="nav-item fw-semibold d-none d-lg-block ms-0">
               <h1 class="welcome-text">Good Day, <span class="text-black fw-bold">
-                <?php echo $user_display ? $user_display : 'Guest'; ?>
+                <?php echo $_SESSION['username']  ; ?>
               </span></h1>
               <h3 class="welcome-sub-text">Your performance summary this week </h3>
+
+              <?php if (!empty($referral_code)) : ?>
+                <div class="mt-2">
+                  <h6 class="mb-0">My referral code</h6>
+                  <h4 class="text-primary fw-bold"><?php echo 'http://localhost/dashboard/dist/pages/samples/register.php?'.'ref=' . $referral_code; ?></h4>
+                </div>
+              <?php endif; ?>
+
             </li>
           </ul>
           <ul class="navbar-nav ms-auto">
@@ -619,5 +635,47 @@ if ($username) {
     <script src="assets/js/dashboard.js"></script>
     <!-- <script src="assets/js/Chart.roundedBarCharts.js"></script> -->
     <!-- End custom js for this page-->
+     <!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/68f3670bdbee37194fa7a9ba/1j7rcl1t7';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+<!-- <script src="dist/pages/samples/sessiontimeout.js"></script> -->
+
+
+<!-- Cookie Consent -->
+<style>
+#cookie-consent{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:none;padding:24px;box-shadow:0 -6px 24px rgba(0,0,0,0.45);color:#8d8d8d;background:#f4f5f7;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}#cookie-consent .cc-inner{display:flex;gap:20px;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto}#cookie-consent .cc-left{flex:1 1 auto;min-width:0}#cookie-consent h3{margin:0 0 6px;font-size:18px;font-weight:700;color:#8d8d8d}#cookie-consent p{margin:0;color:#8d8d8d;font-size:13px;line-height:1.4}#cookie-consent .cc-actions{display:flex;gap:10px;align-items:center;margin-left:20px;flex-shrink:0}.cc-btn{min-width:150px;padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer}.cc-btn-accept{background:#4B49AC;border:none;color:#fff}.cc-btn-reject{background:transparent;color:#8d8d8d;border:1px solid #8d8d8d}.cc-btn-manage{background:#6c757d;border:none;color:#fff}@media (max-width:768px){#cookie-consent .cc-inner{flex-direction:column;align-items:stretch}#cookie-consent .cc-actions{width:100%;justify-content:space-between;margin-top:12px}.cc-btn{min-width:30%;padding:8px 10px;font-size:13px}}
+</style>
+
+<!-- ...existing code... -->
+<div id="cookie-consent" role="dialog" aria-live="polite" aria-label="Cookie consent">
+  <div class="cc-inner">
+    <div class="cc-left">
+      <h3>We Care About Your Privacy</h3>
+      <p>We and our partners store and access personal data, like browsing data or unique identifiers, on your device. Selecting "I Accept" enables tracking technologies to support features of this site. You can manage preferences or reject all.</p>
+      <a class="cc-link" href="/pages/samples/privacy-policy.php" target="_blank" rel="noopener" style="color:#8d8d8d;text-decoration:underline;font-size:12px;margin-top:8px;display:inline-block;">Privacy Policy · List of partners</a>
+    </div>
+    <div class="cc-actions">
+      <button id="cc-accept" class="cc-btn cc-btn-accept btn">I Accept</button>
+      <button id="cc-reject" class="cc-btn cc-btn-reject btn">Reject All</button>
+      <button id="cc-manage" class="cc-btn cc-btn-manage btn">Manage Preferences</button>
+    </div>
+  </div>
+</div>
+<!-- ...existing code... -->
+
+<script>
+(function(){const COOKIE_NAME='site_cookie_consent',EXPIRES_DAYS=365;function setCookie(name,value,days){const d=new Date();d.setTime(d.getTime()+(days*24*60*60*1000));document.cookie=`${name}=${encodeURIComponent(value)};path=/;expires=${d.toUTCString()};SameSite=Lax`}function getCookie(name){const match=document.cookie.match('(^|;)\\s*'+name+'\\s*=\\s*([^;]+)');return match?decodeURIComponent(match.pop()):null}function showBanner(){const el=document.getElementById('cookie-consent');if(el)el.style.display='block'}function hideBanner(){const el=document.getElementById('cookie-consent');if(el)el.style.display='none'}document.addEventListener('DOMContentLoaded',function(){if(!getCookie(COOKIE_NAME)){showBanner()}document.getElementById('cc-accept')?.addEventListener('click',function(){setCookie(COOKIE_NAME,'accepted',EXPIRES_DAYS);hideBanner()});document.getElementById('cc-reject')?.addEventListener('click',function(){setCookie(COOKIE_NAME,'rejected',EXPIRES_DAYS);hideBanner()});document.getElementById('cc-manage')?.addEventListener('click',function(){window.location.href='/pages/samples/privacy-settings.php'})})})();
+</script>
+
   </body>
 </html>
